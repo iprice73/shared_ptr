@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
+project(sharedPtr)
 # Download and unpack googletest at configure time
 configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
@@ -35,4 +36,4 @@ endif()
 enable_testing()
 add_executable(sharedTest shared_ptr.ut.cpp)
 target_link_libraries(sharedTest gtest_main)
-add_test(NAME shared_ptr_test COMMAND uniqueTest)
+add_test(NAME shared_ptr_test COMMAND sharedTest)
