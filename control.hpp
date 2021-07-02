@@ -2,39 +2,34 @@
 
 #include <stddef.h>
 #include <atomic>
+#include <functional>
+
+template <class T>
+using Deleter = std::function<void(T* ptr)>;
+auto default_deleter = [](auto* ptr) { delete ptr; };
 
 template <class T>
 class control_block {
 public:
+    control_block() = default;
+    control_block(Deleter<T> deleter);
+
     int get_shared_refs() const { return shared_refs; }
     int get_weak_refs() const { return weak_refs; }
+    Deleter<T> get_deleter() const { return deleter_; }
 
-    void increment_shared_refs() noexcept;
-    void increment_weak_refs() noexcept;
-    void decrement_shared_refs() noexcept;
-    void decrement_weak_refs() noexcept;
+    void increment_shared_refs() noexcept { shared_refs++; };
+    void increment_weak_refs() noexcept { weak_refs++; };
+    void decrement_shared_refs() noexcept { shared_refs--; };
+    void decrement_weak_refs() noexcept { weak_refs--; };
 
 private:
     std::atomic<size_t> shared_refs{1};
     std::atomic<size_t> weak_refs{};
+    Deleter<T> deleter_{default_deleter};
 };
 
 template <class T>
-void control_block<T>::increment_shared_refs() noexcept {
-    shared_refs++;
-}
-
-template <class T>
-void control_block<T>::increment_weak_refs() noexcept {
-    weak_refs++;
-}
-
-template <class T>
-void control_block<T>::decrement_shared_refs() noexcept {
-    shared_refs--;
-}
-
-template <class T>
-void control_block<T>::decrement_weak_refs() noexcept {
-    weak_refs--;
+control_block<T>::control_block(Deleter<T> deleter)
+    : deleter_(deleter) {
 }
