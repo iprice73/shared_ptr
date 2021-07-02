@@ -6,18 +6,16 @@ template <class T>
 class shared_ptr {
 public:
     // Constructors
-    explicit shared_ptr(T* new_ptr = nullptr);
+    explicit shared_ptr(T* new_ptr = nullptr, Deleter<T> deleter = default_deleter);
     shared_ptr(const shared_ptr<T>& other_ptr);
     shared_ptr(shared_ptr<T>&& other_ptr) noexcept;
 
     // Destructor
-    void release_memory();
     ~shared_ptr();
 
     // Methods
     T* get() const;
-    control_block<T>* get_block() const;
-    void reset(T* other_ptr);
+    void reset(T* other_ptr, Deleter<T> deleter = default_deleter);
     void swap(shared_ptr<T>& other_ptr);
     size_t use_count() const { return m_block->get_shared_refs(); }
 
@@ -26,22 +24,20 @@ public:
     shared_ptr<T>& operator=(shared_ptr<T>&& other_ptr) noexcept;
     T& operator*() const;
     T* operator->() const;
-
-    operator bool();
+    operator bool() const;
 
 private:
     T* m_ptr{nullptr};
     control_block<T>* m_block{nullptr};
+
+    void release_memory();
 };
 
 // Constructors
 
 template <class T>
-shared_ptr<T>::shared_ptr(T* new_ptr)
-    : m_ptr(new_ptr) {
-    if (!m_block) {
-        m_block = new control_block<T>();
-    }
+shared_ptr<T>::shared_ptr(T* new_ptr, Deleter<T> deleter)
+    : m_ptr(new_ptr), m_block(new control_block<T>(deleter)) {
 }
 
 template <class T>
@@ -60,17 +56,6 @@ shared_ptr<T>::shared_ptr(shared_ptr<T>&& other_ptr) noexcept
 // Destructor
 
 template <class T>
-void shared_ptr<T>::release_memory() {
-    if (m_block) {
-        m_block->decrement_shared_refs();
-        if (m_block->get_shared_refs() == 0) {
-            delete m_ptr; // This is a placeholder, control block will have custom deleter
-            delete m_block;
-        }
-    }
-}
-
-template <class T>
 shared_ptr<T>::~shared_ptr<T>() {
     release_memory();
 }
@@ -78,19 +63,33 @@ shared_ptr<T>::~shared_ptr<T>() {
 // Methods
 
 template <class T>
+void shared_ptr<T>::release_memory() {
+    if (m_block) {
+        m_block->decrement_shared_refs();
+        if (!m_block->get_shared_refs()) {
+            m_block->get_deleter()(m_ptr);
+            delete m_block;
+        }
+    }
+}
+
+template <class T>
 T* shared_ptr<T>::get() const {
     return m_ptr;
 }
 
 template <class T>
-control_block<T>* shared_ptr<T>::get_block() const {
-    return m_block;
+void shared_ptr<T>::swap(shared_ptr<T>& other) {
+    auto tmp = other.m_ptr;
+    other.m_ptr = m_ptr;
+    m_ptr = tmp;
 }
 
 template <class T>
-void shared_ptr<T>::reset(T* other_ptr) {
-    delete m_ptr;
+void shared_ptr<T>::reset(T* other_ptr, Deleter<T> deleter) {
+    release_memory();
     m_ptr = other_ptr;
+    m_block = new control_block<T>(deleter);
 }
 
 // Operators
@@ -98,7 +97,7 @@ void shared_ptr<T>::reset(T* other_ptr) {
 template <class T>
 shared_ptr<T>& shared_ptr<T>::operator=(const shared_ptr<T>& other_ptr) {
     if (&other_ptr != this) {
-        delete m_ptr;
+        release_memory();
         m_ptr = other_ptr.m_ptr;
         m_block = other_ptr.m_block;
         m_block->increment_shared_refs();
@@ -109,7 +108,7 @@ shared_ptr<T>& shared_ptr<T>::operator=(const shared_ptr<T>& other_ptr) {
 template <class T>
 shared_ptr<T>& shared_ptr<T>::operator=(shared_ptr<T>&& other_ptr) noexcept {
     if (&other_ptr != this) {
-        delete m_ptr;
+        release_memory();
         m_ptr = other_ptr.m_ptr;
         m_block = other_ptr.m_block;
         other_ptr.m_ptr = nullptr;
@@ -126,4 +125,9 @@ T& shared_ptr<T>::operator*() const {
 template <class T>
 T* shared_ptr<T>::operator->() const {
     return m_ptr;
+}
+
+template <class T>
+shared_ptr<T>::operator bool() const {
+    return (m_ptr) ? true : false;
 }
