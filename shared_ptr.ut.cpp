@@ -9,10 +9,17 @@ struct shared_ptr_tests_fixture : public ::testing::Test {
 };
 
 TEST(shared_ptr_tests, shouldCreateDefaultNullptr) {
+    // Given
+    int expected_cout = 0;
+    
+    // When
     shared_ptr<int> ptr{};
+
+    // Then
     ASSERT_FALSE(ptr);
     ASSERT_EQ(ptr.get(), nullptr);
     ASSERT_EQ(ptr.operator->(), nullptr);
+    ASSERT_EQ(ptr.use_count(), expected_cout);
 }
 
 TEST(shared_ptr_tests, shouldCreatePtrWithInt) {
@@ -95,7 +102,7 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromMoveOperator) {
 TEST_F(shared_ptr_tests_fixture, shouldSwap) {
     // Given
     shared_ptr<int> ptr(new int(-value));
-    
+
     // When
     ptr.swap(ptr_test);
 
