@@ -37,7 +37,7 @@ private:
 
 template <class T>
 shared_ptr<T>::shared_ptr(T* new_ptr, Deleter<T> deleter)
-    : m_ptr(new_ptr), m_block(new control_block<T>(deleter)) {
+    : m_ptr(new_ptr), m_block((m_ptr) ? new control_block<T>(deleter) : new control_block<T>(deleter, 0)) {
 }
 
 template <class T>

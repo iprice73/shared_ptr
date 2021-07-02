@@ -12,7 +12,7 @@ template <class T>
 class control_block {
 public:
     control_block() = default;
-    control_block(Deleter<T> deleter);
+    control_block(Deleter<T> deleter, size_t shared_cnt = 1);
 
     int get_shared_refs() const { return shared_refs; }
     int get_weak_refs() const { return weak_refs; }
@@ -25,11 +25,11 @@ public:
 
 private:
     std::atomic<size_t> shared_refs{1};
-    std::atomic<size_t> weak_refs{};
+    std::atomic<size_t> weak_refs{0};
     Deleter<T> deleter_{default_deleter};
 };
 
 template <class T>
-control_block<T>::control_block(Deleter<T> deleter)
-    : deleter_(deleter) {
+control_block<T>::control_block(Deleter<T> deleter, size_t shared_cnt)
+    : deleter_(deleter), shared_refs(shared_cnt) {
 }
