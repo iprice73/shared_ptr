@@ -14,8 +14,8 @@ public:
     control_block() = default;
     control_block(Deleter<T> deleter, size_t shared_cnt = 1);
 
-    int get_shared_refs() const { return shared_refs; }
-    int get_weak_refs() const { return weak_refs; }
+    size_t get_shared_refs() const { return shared_refs; }
+    size_t get_weak_refs() const { return weak_refs; }
     Deleter<T> get_deleter() const { return deleter_; }
 
     void increment_shared_refs() noexcept { shared_refs++; };
@@ -24,9 +24,9 @@ public:
     void decrement_weak_refs() noexcept { weak_refs--; };
 
 private:
+    Deleter<T> deleter_{default_deleter};
     std::atomic<size_t> shared_refs{1};
     std::atomic<size_t> weak_refs{0};
-    Deleter<T> deleter_{default_deleter};
 };
 
 template <class T>

@@ -34,6 +34,9 @@ endif()
 
 # Now simply link against gtest or gtest_main as needed. Eg
 enable_testing()
+
+
 add_executable(sharedTest shared_ptr.ut.cpp)
 target_link_libraries(sharedTest gtest_main)
+target_compile_options(sharedTest PRIVATE -Wall -Wextra -Werror -Wconversion -pedantic -O3)
 add_test(NAME shared_ptr_test COMMAND sharedTest)
