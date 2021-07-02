@@ -35,12 +35,13 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromCopyCtor) {
 
     // When
     auto ptr(ptr_test);
+    expected_count++;
 
     // Then
     ASSERT_TRUE(ptr);
     ASSERT_EQ(*ptr, *ptr_test);
     ASSERT_EQ(ptr.get(), ptr_test.get());
-    ASSERT_EQ(ptr.use_count(), ++expected_count);
+    ASSERT_EQ(ptr.use_count(), expected_count);
 }
 
 TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromCopyOperator) {
@@ -50,12 +51,13 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromCopyOperator) {
 
     // When
     auto ptr = ptr_test;
+    expected_count++;
 
     // Then
     ASSERT_TRUE(ptr);
     ASSERT_EQ(*ptr, *ptr_test);
     ASSERT_EQ(ptr.get(), ptr_test.get());
-    ASSERT_EQ(ptr_test.use_count(), ++expected_count);
+    ASSERT_EQ(ptr_test.use_count(), expected_count);
 }
 
 TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromMoveCtor) {
