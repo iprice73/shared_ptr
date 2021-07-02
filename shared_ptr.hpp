@@ -27,7 +27,6 @@ public:
     operator bool() const;
 
     // Others
-
     template <class Ts, class... Args>
     friend shared_ptr<Ts> make_shared(Args&&... args);
 

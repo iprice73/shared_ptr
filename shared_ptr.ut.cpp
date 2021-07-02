@@ -60,6 +60,22 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromCopyCtor) {
     ASSERT_EQ(ptr.use_count(), expected_count);
 }
 
+TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromMoveCtor) {
+    // Given
+    int expected_count = 1;
+    ASSERT_EQ(ptr_test.use_count(), expected_count);
+
+    // When
+    auto ptr(std::move(ptr_test));
+
+    // Then
+    ASSERT_TRUE(ptr);
+    ASSERT_EQ(*ptr, value);
+    ASSERT_FALSE(ptr_test);
+    ASSERT_EQ(ptr_test.get(), nullptr);
+    ASSERT_EQ(ptr.use_count(), expected_count);
+}
+
 TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromCopyOperator) {
     // Given
     int expected_count = 1;
@@ -76,20 +92,21 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromCopyOperator) {
     ASSERT_EQ(ptr_test.use_count(), expected_count);
 }
 
-TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromMoveCtor) {
+TEST_F(shared_ptr_tests_fixture, shouldModifyFromCopyOperator) {
     // Given
-    int expected_count = 1;
-    ASSERT_EQ(ptr_test.use_count(), expected_count);
+    int expected_count = 3;
+    shared_ptr<int> ptr(new int(value * value));
 
     // When
-    auto ptr(std::move(ptr_test));
+    ptr_test = ptr;
+    auto ptr_other = ptr_test;
 
     // Then
     ASSERT_TRUE(ptr);
-    ASSERT_EQ(*ptr, value);
-    ASSERT_FALSE(ptr_test);
-    ASSERT_EQ(ptr_test.get(), nullptr);
-    ASSERT_EQ(ptr.use_count(), expected_count);
+    ASSERT_TRUE(ptr_test);
+    ASSERT_TRUE(ptr_other);
+    ASSERT_EQ(*ptr_other, value * value);
+    ASSERT_EQ(ptr_other.use_count(), expected_count);
 }
 
 TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromMoveOperator) {
