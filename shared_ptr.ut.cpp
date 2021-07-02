@@ -91,3 +91,30 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromMoveOperator) {
     ASSERT_EQ(ptr_test.get(), nullptr);
     ASSERT_EQ(ptr.use_count(), expected_count);
 }
+
+TEST_F(shared_ptr_tests_fixture, shouldSwap) {
+    // Given
+    shared_ptr<int> ptr(new int(-value));
+    
+    // When
+    ptr.swap(ptr_test);
+
+    // Then
+    ASSERT_EQ(*ptr_test, -value);
+    ASSERT_EQ(*ptr, value);
+}
+
+TEST_F(shared_ptr_tests_fixture, shouldReset) {
+    // Given
+    int expected_count = 2;
+    auto ptr(ptr_test);
+    ASSERT_EQ(ptr_test.use_count(), expected_count);
+
+    // When
+    ptr_test.reset(new int(-value));
+    expected_count = 1;
+
+    // Then
+    ASSERT_EQ(*ptr_test, -value);
+    ASSERT_EQ(ptr_test.use_count(), expected_count);
+}
