@@ -90,6 +90,4 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromMoveOperator) {
     ASSERT_FALSE(ptr_test);
     ASSERT_EQ(ptr_test.get(), nullptr);
     ASSERT_EQ(ptr.use_count(), expected_count);
-
-    
 }
