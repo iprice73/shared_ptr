@@ -94,12 +94,14 @@ TEST_F(shared_ptr_tests_fixture, shouldCreatePtrFromCopyOperator) {
 
 TEST_F(shared_ptr_tests_fixture, shouldModifyFromCopyOperator) {
     // Given
-    int expected_count = 3;
+    int expected_count = 1;
     shared_ptr<int> ptr(new int(value * value));
+    ASSERT_EQ(ptr.use_count(), expected_count);
 
     // When
     ptr_test = ptr;
     auto ptr_other = ptr_test;
+    expected_count += 2;
 
     // Then
     ASSERT_TRUE(ptr);
