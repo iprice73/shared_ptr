@@ -120,7 +120,7 @@ TEST_F(shared_ptr_tests_fixture, shouldSwap) {
     ASSERT_EQ(*ptr, value);
 }
 
-TEST_F(shared_ptr_tests_fixture, shouldReset) {
+TEST_F(shared_ptr_tests_fixture, shouldResetToGivenValue) {
     // Given
     int expected_count = 2;
     auto ptr(ptr_test);
@@ -132,6 +132,21 @@ TEST_F(shared_ptr_tests_fixture, shouldReset) {
 
     // Then
     ASSERT_EQ(*ptr_test, -value);
+    ASSERT_EQ(ptr_test.use_count(), expected_count);
+}
+
+TEST_F(shared_ptr_tests_fixture, shouldResetToNullptr) {
+    // Given
+    int expected_count = 1;
+    ASSERT_EQ(ptr_test.use_count(), expected_count);
+
+    // When
+    ptr_test.reset();
+    expected_count = 0;
+
+    // Then
+    ASSERT_FALSE(ptr_test);
+    ASSERT_EQ(ptr_test.get(), nullptr);
     ASSERT_EQ(ptr_test.use_count(), expected_count);
 }
 

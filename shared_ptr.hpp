@@ -15,7 +15,7 @@ public:
 
     // Methods
     T* get() const;
-    void reset(T* other_ptr, Deleter<T> deleter = default_deleter);
+    void reset(T* other_ptr = nullptr, Deleter<T> deleter = default_deleter);
     void swap(shared_ptr<T>& other_ptr);
     size_t use_count() const { return m_block->get_shared_refs(); }
 
@@ -94,7 +94,7 @@ template <class T>
 void shared_ptr<T>::reset(T* other_ptr, Deleter<T> deleter) {
     release_memory();
     m_ptr = other_ptr;
-    m_block = new control_block<T>(deleter);
+    m_block = (m_ptr) ? new control_block<T>(deleter) : new control_block<T>(deleter, 0);
 }
 
 // Operators
