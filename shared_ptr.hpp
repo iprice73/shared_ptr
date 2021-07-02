@@ -136,6 +136,8 @@ shared_ptr<T>::operator bool() const {
     return (m_ptr) ? true : false;
 }
 
+// Others
+
 template <class Ts, class... Args>
 shared_ptr<Ts> make_shared(Args&&... args) {
     return shared_ptr<Ts>(new Ts{std::forward<Args>(args)...});
