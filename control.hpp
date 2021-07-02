@@ -20,8 +20,8 @@ public:
 
     void increment_shared_refs() noexcept { shared_refs++; };
     void increment_weak_refs() noexcept { weak_refs++; };
-    void decrement_shared_refs() noexcept { shared_refs--; };
-    void decrement_weak_refs() noexcept { weak_refs--; };
+    void decrement_shared_refs() noexcept { if (shared_refs) { shared_refs--; } };
+    void decrement_weak_refs() noexcept { if (weak_refs) { weak_refs--; } };
 
 private:
     Deleter<T> deleter_{default_deleter};
