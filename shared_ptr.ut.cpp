@@ -19,7 +19,7 @@ struct shared_ptr_tests_fixture : public ::testing::Test {
 
 TEST(shared_ptr_tests, shouldCreateDefaultNullptr) {
     // Given
-    int expected_cout = 0;
+    int expected_count = 0;
 
     // When
     shared_ptr<int> ptr{};
@@ -28,7 +28,7 @@ TEST(shared_ptr_tests, shouldCreateDefaultNullptr) {
     ASSERT_FALSE(ptr);
     ASSERT_EQ(ptr.get(), nullptr);
     ASSERT_EQ(ptr.operator->(), nullptr);
-    ASSERT_EQ(ptr.use_count(), expected_cout);
+    ASSERT_EQ(ptr.use_count(), expected_count);
 }
 
 TEST(shared_ptr_tests, shouldCreatePtrWithInt) {
