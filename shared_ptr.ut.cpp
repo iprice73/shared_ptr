@@ -4,6 +4,15 @@
 
 constexpr int value = 42;
 
+struct example_obj {
+    int val_;
+    char sign_;
+    bool flag_;
+
+    example_obj(int val, char sign, bool flag)
+        : val_(val), sign_(sign), flag_(flag) {}
+};
+
 struct shared_ptr_tests_fixture : public ::testing::Test {
     shared_ptr<int> ptr_test{new int{value}};
 };
@@ -11,7 +20,7 @@ struct shared_ptr_tests_fixture : public ::testing::Test {
 TEST(shared_ptr_tests, shouldCreateDefaultNullptr) {
     // Given
     int expected_cout = 0;
-    
+
     // When
     shared_ptr<int> ptr{};
 
@@ -124,4 +133,34 @@ TEST_F(shared_ptr_tests_fixture, shouldReset) {
     // Then
     ASSERT_EQ(*ptr_test, -value);
     ASSERT_EQ(ptr_test.use_count(), expected_count);
+}
+
+TEST(make_shared_tests, shouldCreatePtrFromTrivialType) {
+    // Given
+    int expected_count = 1;
+
+    // When
+    auto ptr = make_shared<int>(value);
+
+    // Then
+    ASSERT_TRUE(ptr);
+    ASSERT_EQ(*ptr, value);
+    ASSERT_EQ(ptr.use_count(), expected_count);
+}
+
+TEST(make_shared_tests, shouldCreatePtrFromCustomType) {
+    // Given
+    int expected_count = 1;
+    char example_char = 'z';
+    bool example_bool = true;
+
+    // When
+    auto ptr = make_shared<example_obj>(value, example_char, example_bool);
+
+    // Then
+    ASSERT_TRUE(ptr);
+    ASSERT_EQ(ptr.use_count(), expected_count);
+    ASSERT_EQ(ptr->val_, value);
+    ASSERT_EQ(ptr->sign_, example_char);
+    ASSERT_EQ(ptr->flag_, example_bool);
 }
